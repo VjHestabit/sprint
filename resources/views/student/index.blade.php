@@ -51,7 +51,7 @@
                                     <td>{{ $aRow->email }}</td>
                                     <td>{{ ($aRow->userdata->address) ? $aRow->userdata->address : '-------' }}</td>
                                     <td>
-                                        <button class="btn {{ CustomHelper::$studentBtnStatus[$aRow->userdata->assigned_status] }}">{{ CustomHelper::$studentStatus[$aRow->userdata->assigned_status] }}</button>
+                                        <button class="btn {{ CustomHelper::$studentBtnStatus[$aRow->userdata->assigned_status] }}" onclick="">{{ CustomHelper::$studentStatus[$aRow->userdata->assigned_status] }}</button>
                                     </td>
                                     <td>
                                         @if ($aRow->assigned_status == CustomHelper::ASSIGNED)
@@ -83,6 +83,12 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+    </div>
+<!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+
         </div>
     </div>
 

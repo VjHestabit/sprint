@@ -32,5 +32,6 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['check_user_role:999'])->group(function(){
         Route::resource('teachers',TeacherController::class);
         Route::get('approve/student/{id}/{status}',[StudentController::class,'approveStudent'])->name('approveStudent');
+        Route::post('assigned/teacher',[StudentController::class,'assignedTeacher'])->name('assignedTeacher');
     });
 });

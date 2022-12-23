@@ -101,4 +101,11 @@ class StudentController extends Controller
 
         return redirect()->back()->with(['success','Student Approved Successfully']);
     }
+
+    public function assignedTeacher(Request $request)
+    {
+        $teacherList = User::where('role_id',CustomHelper::TEACHER)->where('status',CustomHelper::APPROVE)->pluck('first_name','id')->toArray();
+
+        return (string) view('student.assign',compact('teacherList'))->render();
+    }
 }
