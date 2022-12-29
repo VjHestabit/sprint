@@ -63,13 +63,10 @@ class User extends Authenticatable implements JWTSubject
     //     'profile_picture',
     // ];
 
-    public function teacher(){
-        return $this->hasOne(UserDetail::class,'assigned_to','id');
-    }
-    public function userdata(){
-        return $this->hasOne(UserDetail::class,'user_id','id');
-    }
 
+    public function getData(){
+        return $this->hasOne(User::class,'id','assigned_to');
+    }
         /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *

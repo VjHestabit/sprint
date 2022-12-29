@@ -10,7 +10,41 @@
     <!-- Topbar Navbar -->
     <ul class="ml-auto navbar-nav">
 
-
+        @if (Auth::user()->role_id == CustomHelper::TEACHER)
+              <!-- Nav Item - Alerts -->
+              <li class="mx-1 nav-item dropdown no-arrow">
+                <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-bell fa-fw"></i>
+                    <!-- Counter - Alerts -->
+                    @php
+                        $count = CustomHelper::notificationCount();
+                        $data = CustomHelper::notificationData();
+                    @endphp
+                    <span class="badge badge-danger badge-counter">{{ ($count > 0) ? $count : ''}}</span>
+                </a>
+                <!-- Dropdown - Alerts -->
+                <div class="shadow dropdown-list dropdown-menu dropdown-menu-right animated--grow-in"
+                    aria-labelledby="alertsDropdown">
+                    <h6 class="dropdown-header">
+                        Alerts Center
+                    </h6>
+                    @foreach ($data as $key => $notify)
+                        <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="mr-3">
+                                <div class="icon-circle bg-primary">
+                                    <i class="text-white fas fa-file-alt"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-gray-500 small">{{ date('M  d, Y',strtotime($notify->created_at))  }}</div>
+                                <span class="font-weight-bold">{{ json_decode($notify->data)->data }}</span>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            </li>
+        @endif
 
         <div class="topbar-divider d-none d-sm-block"></div>
 
@@ -20,12 +54,12 @@
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="mr-2 text-gray-600 d-none d-lg-inline small">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</span>
                 <img class="img-profile rounded-circle"
-                    src="{{ asset('assets/img/undraw_profile.svg') }}">
+                    src="{{ (isset(Auth::user()->profile_picture)) ? asset('uploads/'.Auth::user()->profile_picture) : asset('assets/img/undraw_profile.svg') }}">
             </a>
             <!-- Dropdown - User Information -->
             <div class="shadow dropdown-menu dropdown-menu-right animated--grow-in"
                 aria-labelledby="userDropdown">
-                <a class="dropdown-item" href="#">
+                <a class="dropdown-item" href="{{ route('profileShow') }}">
                     <i class="mr-2 text-gray-400 fas fa-user fa-sm fa-fw"></i>
                     Profile
                 </a>

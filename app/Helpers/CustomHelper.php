@@ -2,6 +2,10 @@
 
 namespace App\Helpers;
 
+use App\Models\Notification;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+
 class CustomHelper{
 
     const ADMIN = 999;
@@ -67,5 +71,22 @@ class CustomHelper{
         self::COMPUTER => 'Computers'
     ];
 
+    public static function notificationCount(){
+        $count = 0;
+        $data = Notification::where('notifiable_id',Auth::user()->id)->whereNull('read_at')->count();
+        if($data){
+            $count = $data;
+        }
+        return $count;
+    }
+
+    public static function notificationData(){
+        $data = array();
+        $notify = Notification::where('notifiable_id',Auth::user()->id)->whereNull('read_at')->get();
+        if($notify){
+            $data = $notify;
+        }
+        return $data;
+    }
 }
 ?>

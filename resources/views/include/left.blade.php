@@ -21,12 +21,11 @@
     <!-- Divider -->
     <hr class="sidebar-divider">
 
+    @if (Auth::user()->role_id == CustomHelper::ADMIN || Auth::user()->role_id == CustomHelper::TEACHER)
     <!-- Heading -->
     <div class="sidebar-heading">
         User Management
     </div>
-
-    @if (Auth::user()->role_id == CustomHelper::ADMIN || Auth::user()->role_id == CustomHelper::TEACHER)
           <!-- Nav Item - Charts -->
         <li class="nav-item">
             <a class="nav-link" href="{{ route('students.index') }}">

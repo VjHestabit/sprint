@@ -20,4 +20,5 @@ class UserDetail extends Model
         'assigned_status',
         'assigned_to'
     ];
+
 }

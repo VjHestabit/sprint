@@ -26,6 +26,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+    Route::middleware(['check_user_role:999,100,101'])->group(function(){
+        Route::get('profile',[StudentController::class,'profileShow'])->name('profileShow');
+        Route::post('profile_update',[StudentController::class,'profileUpdate'])->name('profileUpdate');
+    });
     Route::middleware(['check_user_role:999,101'])->group(function(){
         Route::resource('students',StudentController::class);
     });
@@ -33,5 +37,9 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('teachers',TeacherController::class);
         Route::get('approve/student/{id}/{status}',[StudentController::class,'approveStudent'])->name('approveStudent');
         Route::post('assigned/teacher',[StudentController::class,'assignedTeacher'])->name('assignedTeacher');
+        Route::post('assignteacher',[StudentController::class,'teacherAssign'])->name('teacherAssign');
+
+        Route::get('approve/teacher/{id}/{status}',[TeacherController::class,'approveTeacher'])->name('approveTeacher');
+
     });
 });

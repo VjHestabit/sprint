@@ -1,7 +1,4 @@
 @extends('layouts.admin')
-@php
-    use App\Models\UserDetail;
-@endphp
 @section('css')
     <!-- Custom styles for this page -->
     <link href="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
@@ -27,8 +24,6 @@
                             <th>Name</th>
                             <th>Email</th>
                             <th>Address</th>
-                            <th>Teacher Assigned</th>
-                            <th>Teacher Name</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -39,8 +34,6 @@
                             <th>Name</th>
                             <th>Email</th>
                             <th>Address</th>
-                            <th>Teacher Assigned</th>
-                            <th>Teacher Name</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -52,24 +45,10 @@
                                     <td>{{ ++$aKey }}</td>
                                     <td>{{ $aRow->first_name }} {{ $aRow->last_name }}</td>
                                     <td>{{ $aRow->email }}</td>
-                                    <td>{{ ($aRow->address) ? $aRow->address : '-------' }}</td>
+                                <td>{{ ($aRow->address) ? $aRow->address : '-------' }}</td>
                                     <td>
-                                        @if (Auth::user()->role_id == CustomHelper::ADMIN)
-                                            <button class="btn {{ CustomHelper::$studentBtnStatus[$aRow->assigned_status] }}" onclick="assignTeacher('{{ $aRow->id }}')">{{ CustomHelper::$studentStatus[$aRow->assigned_status] }}</button>
-                                        @else
-                                        <button class="btn {{ CustomHelper::$studentBtnStatus[$aRow->assigned_status] }}">{{ CustomHelper::$studentStatus[$aRow->assigned_status] }}</button>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if ($aRow->assigned_status == CustomHelper::ASSIGNED)
-                                            {{ $aRow->getData->first_name }} {{ $aRow->getData->last_name }}
-                                        @else
-                                        -----------------
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if ($aRow->status == CustomHelper::NOTAPPROVE && Auth::user()->role_id == CustomHelper::ADMIN)
-                                            <a href="{{ URL('approve/student') }}/{{ $aRow->id }}/1" class="btn {{ CustomHelper::$getUserBtnStatus[$aRow->status] }}" onclick="return confirm('Are you sure you want to change the status');">
+                                        @if ($aRow->status == CustomHelper::NOTAPPROVE)
+                                            <a href="{{ URL('approve/teacher') }}/{{ $aRow->id }}/1" class="btn {{ CustomHelper::$getUserBtnStatus[$aRow->status] }}" onclick="return confirm('Are you sure you want to change the status');">
                                                 {{ CustomHelper::$getUserStatus[$aRow->status] }}
                                             </a>
                                         @else
@@ -94,7 +73,7 @@
     </div>
 <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document" id="approveData">
+        <div class="modal-dialog" role="document">
 
         </div>
     </div>
@@ -109,22 +88,4 @@
 
     <!-- Page level custom scripts -->
     <script src="{{ asset('assets/js/demo/datatables-demo.js') }}"></script>
-    <script>
-        function assignTeacher(id){
-            $.ajax({
-                method : 'POST',
-                url : '{{ route("assignedTeacher") }}',
-                data : {
-                    _token : '{{ csrf_token() }}',
-                    id : id
-                },
-                success:function(response){
-                    console.log(response);
-                    $('#approveData').html(response);
-
-                    $('#exampleModal').modal('show');
-                }
-            });
-        }
-    </script>
 @endsection
