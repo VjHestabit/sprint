@@ -49,10 +49,10 @@
                                 <input type="hidden" name="role_id" value="{{ $id }}">
                                 <div class="form-group row">
                                     <div class="mb-3 col-sm-6 mb-sm-0">
-                                        <input type="text" class="form-control form-control-user" id="exampleFirstName" name="first_name" placeholder="First Name" required autofocus>
+                                        <input type="text" class="form-control form-control-user" id="exampleFirstName" name="first_name" placeholder="First Name"  autofocus>
                                     </div>
                                     <div class="col-sm-6">
-                                        <input type="text" class="form-control form-control-user" id="exampleFirstName" name="last_name" placeholder="Last Name" required autofocus>
+                                        <input type="text" class="form-control form-control-user" id="exampleFirstName" name="last_name" placeholder="Last Name"  autofocus>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -70,10 +70,10 @@
                                     <textarea type="email" class="form-control" name="address" placeholder="Enter Address"></textarea>
                                 </div>
                                 <div class="form-group">
-                                    <input type="text" name="previous_school" id="previous_school" class="form-control" placeholder="Previous School" {{ ($id == CustomHelper::STUDENT) ? 'required' : '' }}>
+                                    <input type="text" name="previous_school" id="previous_school" class="form-control" placeholder="Previous School" {{ ($id == CustomHelper::STUDENT) ? '' : '' }}>
                                 </div>
                                 <div class="form-group">
-                                    <input type="text" name="current_school" id="current_school" class="form-control" placeholder="Current School" {{ ($id == CustomHelper::STUDENT) ? 'required' : '' }}>
+                                    <input type="text" name="current_school" id="current_school" class="form-control" placeholder="Current School" {{ ($id == CustomHelper::STUDENT) ? '' : '' }}>
                                 </div>
                                 <div class="form-group">
                                     <input type="file"  name="profile_picture">
@@ -83,20 +83,20 @@
                                     <h4>Parent Details</h4>
                                     <hr>
                                     <div class="form-group">
-                                        <input type="text" name="father_name" id="father_name" class="form-control" placeholder="Father's Name" required>
+                                        <input type="text" name="father_name" id="father_name" class="form-control" placeholder="Father's Name" >
                                     </div>
                                     <div class="form-group">
-                                        <input type="text" name="mother_name" id="mother_name" class="form-control" placeholder="Mother's Name" required>
+                                        <input type="text" name="mother_name" id="mother_name" class="form-control" placeholder="Mother's Name" >
                                     </div>
                                 @endif
                                 @if ($id == CustomHelper::TEACHER)
                                     <div class="form-group">
                                         <label>Total Exp</label>
-                                        {{ Form::select('exp',['' => 'Please Select'] + $teacherExp,null,['id' => 'exp','class'=> 'form-control','required' => ($id == CustomHelper::TEACHER) ? 'required' : '']) }}
+                                        {{ Form::select('exp',['' => 'Please Select'] + $teacherExp,null,['id' => 'exp','class'=> 'form-control','' => ($id == CustomHelper::TEACHER) ? '' : '']) }}
                                     </div>
                                     <div class="form-group">
                                         <div class="ml-1 row">
-                                            {{ Form::select('subject_name[]',['' => 'Please Select'] + $getSubjectList,null,['id' => 'exp','class'=> 'form-control','required' => ($id == CustomHelper::TEACHER) ? 'required' : '','multiple' => 'multiple']) }}
+                                            {{ Form::select('subject_name[]',['' => 'Please Select'] + $getSubjectList,null,['id' => 'exp','class'=> 'form-control','' => ($id == CustomHelper::TEACHER) ? '' : '','multiple' => 'multiple']) }}
                                         </div>
                                     </div>
                                 @endif

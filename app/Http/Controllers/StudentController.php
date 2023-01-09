@@ -3,16 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\CustomHelper;
-use App\Models\TeacherSubject;
+use App\Http\Requests\UserRequest;
 use App\Models\User;
 use App\Models\UserDetail;
 use App\Notifications\AssignTeacherNotification;
 use App\Notifications\MailNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Validator;
 
 class StudentController extends Controller
 {
@@ -23,16 +21,9 @@ class StudentController extends Controller
      */
     public function index()
     {
-        $aRows = User::join('user_details','user_details.user_id','users.id')
-                ->where('users.role_id','!=',CustomHelper::ADMIN)
-                ->where('users.id','!=',Auth::user()->id)
-                ->where('users.role_id','!=',CustomHelper::TEACHER);
-        if(Auth::user()->role_id == CustomHelper::TEACHER){
-            $aRows = $aRows->where('users.role_id',CustomHelper::STUDENT)
-                            ->where('user_details.assigned_to',Auth::user()->id);
-        }
-
-        $aRows = $aRows->select('users.*','user_details.assigned_status','assigned_to','user_details.address')->get();
+        $aRows = User::with('userDetail.techerDetail')
+                ->whereNotIn('role_id',[CustomHelper::ADMIN,CustomHelper::TEACHER])
+                ->get();
         // dd($aRows);
         return view('student.index',compact('aRows'));
     }
@@ -105,67 +96,35 @@ class StudentController extends Controller
 
     public function profileShow(Request $request)
     {
-        $user = User::where('id',Auth::user()->id)->first();
-        $user_details = UserDetail::where('user_id',Auth::user()->id)->first();
-        // echo "<pre>";
-        // print_r($user_details);
-        // die;
-        $subject = TeacherSubject::where('user_id',Auth::user()->id)->select('subject_name')->get();
+        $user = User::with(['userDetail','teacherData'])->where('id',Auth::user()->id)->first();
         $teacherExp = CustomHelper::$getTeacherExp;
         $getSubjectList = CustomHelper::$getSubjectList;
-        return view('profile.update',compact('teacherExp','getSubjectList','user','user_details','subject'));
+        return view('profile.update',compact('teacherExp','getSubjectList','user'));
     }
 
-    public function profileUpdate(Request $request)
+    public function profileUpdate(UserRequest $request)
     {
-        $data = $request->all();
-        // echo "<pre>";
-        // print_r($data);
-        // die;
-        Validator::make($data, [
-            'first_name' => ['required', 'string', 'max:255'],
-            'last_name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255'],
-        ])->validate();
-
-
-        $userData['first_name'] = isset($data['first_name']) ? $data['first_name'] : '';
-        $userData['last_name'] = isset($data['last_name']) ? $data['last_name'] : '';
-        $userData['email'] = isset($data['email']) ? $data['email'] : '';
+        $validate = $request->validated();
+        $user_data = $request->only(['first_name','last_name','email','id']);
+        $user = User::find($request->id)->update($user_data);
         if($request->hasFile('profile_picture')){
-            $file= $request->file('profile_picture');
-            $filename= date('YmdHi').$file->getClientOriginalName();
-            $file->move(public_path('uploads'), $filename);
-            $userData['profile_picture'] = $filename;
+            $user->profile_picture = CustomHelper::uploadImage($request->file('profile_picture'));
+            $user->update();
         }
+        $user_detail_data = $request->except(['first_name','last_name','email','id','_token']);
+        $userDetailUpdate = $user->userDetail()->update($user_detail_data);
 
-        $user = User::where('id',$data['id'])->update($userData);
-
-        $uDetails['address'] = isset($data['address']) ? $data['address'] : '';
-        $uDetails['current_school'] = isset($data['current_school']) ? $data['current_school'] : '';
-        $uDetails['previous_school'] = isset($data['previous_school']) ? $data['previous_school'] : '';
-        $uDetails['exp'] = isset($data['exp']) ? $data['exp'] : '';
-        $uDetails['father_name'] = isset($data['father_name']) ? $data['father_name'] : '';
-        $uDetails['mother_name'] = isset($data['mother_name']) ? $data['mother_name'] : '';
-
-        $userDetail = UserDetail::where('user_id',$data['id'])->update($uDetails);
-
-        if(isset($data['subject_name']) && count($data['subject_name']) > 0){
-            $total_subs = count($data['subject_name']);
-            foreach($data['subject_name'] as $key =>  $sub){
-                $tSubject['subject_name'] = $sub;
-                TeacherSubject::where('user_id',$data['id'])->update($tSubject);
+        if($request->has('subject_name') && count($request->input('subject_name')) > 0){
+            foreach($request->input('subject_name') as $key =>  $sub){
+                $user->teacherData()->update($sub);
             }
         }
-
         return redirect()->back()->with('success','Profile Updated Successfully');
     }
 
     public function approveStudent($id,$status)
     {
-        $sUpdate = User::where('id',$id)->update(['status' => $status]);
-        $user = User::where('id',$id)->first();
-
+        $user = User::find($id)->update(['status'=> $status]);
         $details = [
             'greeting' => 'Hi'.$user->first_name. ' ' .$user->last_name,
             'body' => 'Your Profile has been approved',
@@ -173,7 +132,6 @@ class StudentController extends Controller
             'actionText' => 'View My Site',
             'actionURL' => url('/'),
         ];
-
         Notification::route('mail',$user->email)->notify(new MailNotification($details));
 
         return redirect()->back()->with(['success','Student Approved Successfully']);

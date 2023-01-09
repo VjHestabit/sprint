@@ -20,6 +20,6 @@ Route::post('register', [ApiController::class, 'register']);
 Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('logout', [ApiController::class, 'logout']);
     Route::get('get_user', [ApiController::class, 'get_user']);
-    Route::post('update_user',[ApiController::class,'update_user']);
+    Route::put('update_user',[ApiController::class,'update_user']);
     Route::post('delete_user',[ApiController::class,'delete_user']);
 });

@@ -18,10 +18,8 @@ class TeacherController extends Controller
      */
     public function index()
     {
-        $aRows = User::join('user_details','user_details.user_id','users.id')
-                ->where('users.id','!=',Auth::user()->id)
-                ->where('users.role_id',CustomHelper::TEACHER)
-                ->select('users.*','user_details.assigned_status','assigned_to','user_details.address')
+        $aRows = User::with('userDetail','teacherData')
+                ->where('role_id',CustomHelper::TEACHER)
                 ->get();
 
         return view('teacher.index',compact('aRows'));
@@ -95,9 +93,9 @@ class TeacherController extends Controller
 
     public function approveTeacher($id,$status)
     {
-        $sUpdate = User::where('id',$id)->update(['status' => $status]);
-        $user = User::where('id',$id)->first();
-
+        $user = User::find($id);
+        $user->status = $status;
+        $user->update();
         $details = [
             'greeting' => 'Hi'.$user->first_name. ' ' .$user->last_name,
             'body' => 'Your Profile has been approved',

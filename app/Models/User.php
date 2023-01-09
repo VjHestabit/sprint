@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
@@ -63,10 +64,18 @@ class User extends Authenticatable implements JWTSubject
     //     'profile_picture',
     // ];
 
+    public function userDetail(){
+        return $this->hasOne(UserDetail::class,'user_id','id');
+    }
+    public function teacherData(){
+        return $this->hasMany(TeacherSubject::class,'user_id','id');
+    }
 
     public function getData(){
         return $this->hasOne(User::class,'id','assigned_to');
     }
+
+
         /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
@@ -80,4 +89,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    public function setPasswordAttribute($value){
+        $this->attributes['password'] = Hash::make('password');
+    }
+
 }

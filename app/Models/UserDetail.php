@@ -21,4 +21,7 @@ class UserDetail extends Model
         'assigned_to'
     ];
 
+    public function techerDetail(){
+        return $this->hasOne(User::class,'id','assigned_to');
+    }
 }

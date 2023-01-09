@@ -55,14 +55,14 @@
                                     <td>{{ ($aRow->address) ? $aRow->address : '-------' }}</td>
                                     <td>
                                         @if (Auth::user()->role_id == CustomHelper::ADMIN)
-                                            <button class="btn {{ CustomHelper::$studentBtnStatus[$aRow->assigned_status] }}" onclick="assignTeacher('{{ $aRow->id }}')">{{ CustomHelper::$studentStatus[$aRow->assigned_status] }}</button>
+                                            <button class="btn {{ CustomHelper::$studentBtnStatus[$aRow->userDetail['assigned_status']] }}" @if ($aRow->status == CustomHelper::ASSIGNED) onclick="assignTeacher('{{ $aRow->id }}')" @endif>{{ CustomHelper::$studentStatus[$aRow->userDetail['assigned_status']] }}</button>
                                         @else
-                                        <button class="btn {{ CustomHelper::$studentBtnStatus[$aRow->assigned_status] }}">{{ CustomHelper::$studentStatus[$aRow->assigned_status] }}</button>
+                                        <button class="btn {{ CustomHelper::$studentBtnStatus[$aRow->userDetail['assigned_status']] }}">{{ CustomHelper::$studentStatus[$aRow->userDetail['assigned_status']] }}</button>
                                         @endif
                                     </td>
                                     <td>
-                                        @if ($aRow->assigned_status == CustomHelper::ASSIGNED)
-                                            {{ $aRow->getData->first_name }} {{ $aRow->getData->last_name }}
+                                        @if ($aRow->userDetail->assigned_status == CustomHelper::ASSIGNED)
+                                            {{ $aRow->userDetail->techerDetail->first_name }} {{ $aRow->userDetail->techerDetail->last_name }}
                                         @else
                                         -----------------
                                         @endif
